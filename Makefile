@@ -1,6 +1,6 @@
 NAME=go-adx-parser
 OS=linux darwin
-VERSION=0.0.2dev
+VERSION=0.0.3dev
 
 .PHONY: build install release
 
@@ -23,3 +23,8 @@ release:
 	tar -zcf release/$(NAME)_$(VERSION)_darwin_x86_64.tgz -C build/darwin $(NAME)
 	gh-release checksums sha256
 	gh-release create taik/$(NAME) $(VERSION) $(shell git rev-parse --abbrev-ref HEAD) v$(VERSION); true
+
+gen_proto:
+	go get github.com/gogo/protobuf/protoc-gen-gofast
+	protoc --gofast_out=. proto_adx/*.proto
+	protoc --gofast_out=. proto_openx/*.proto

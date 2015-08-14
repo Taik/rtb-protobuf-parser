@@ -2,15 +2,15 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/taik/go-adx-parser/proto"
-	"encoding/base64"
-	"bytes"
+	"github.com/gogo/protobuf/proto"
+	"github.com/taik/go-adx-parser/proto_adx"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 			}
 		}
 
-		request := &realtime_bidding_proto.BidRequest{}
+		request := &adx_rtb.BidRequest{}
 		err := proto.Unmarshal(raw, request)
 		if err != nil {
 			log.Fatalf("Error unmarshaling: %s", err.Error())

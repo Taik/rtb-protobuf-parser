@@ -1,0 +1,404 @@
+/* OpenX RTB Definition Version 17.0.0. */
+
+enum DealPricingType {
+  fixed = 1;     // fixed price
+  floor = 2;     // floor price
+}
+
+enum DealExclusivity {
+  other_bids_accepted = 0;
+  deal_bids_only      = 1;
+}
+
+message ExtKeyValue {
+  optional string key   = 1;
+  optional string value = 2;
+}
+
+message Deal {
+  optional string deal_id                    = 1; // Deal ID for private exchange.
+  /* Optional Parameters for Non guaranteed deals */
+  optional int64 deal_cpm_micros             = 2;
+  optional DealPricingType deal_pricing_type = 3;
+  optional DealExclusivity deal_exclusivity  = 4;
+}
+
+message App {
+  // Subset of app object attributes defined in OpenRTB 2.1
+  optional string id           = 1;       // Application ID specific to OpenX.
+  optional string name         = 2;       // Application name.
+  optional string bundle       = 3;       // Application bundle or package name
+                                          // (e.g., com.foo.mygame). This is
+                                          // intended to be a unique ID across
+                                          // multiple exchanges.
+  optional Publisher publisher = 4;       // App Publisher details
+}
+
+message Site {
+  // Subset of site object attributes defined in OpenRTB 2.3 (sec 3.2.6)
+  optional string id           = 1;   // Exchange-specific site ID
+  optional Publisher publisher = 2;   // Site publisher details
+}
+
+message Video {
+  // ------------------------------------------------------------------------
+  // ***    GUARANTEED VIDEO FIELDS                                       ***
+  // ------------------------------------------------------------------------
+  // These fields are guaranteed to be set by the OpenX RTB system and
+  // and passed to the bidder in a video object if one is passed in the
+  // bidrequest. These are ported over from required OpenRTB 2.1 video
+  // fields.
+
+  repeated string mimes         = 1;
+
+  // Linearity follows OpenRTB 2.1 Table 6.6
+  enum VideoLinearity {
+    linear    = 1;
+    nonlinear = 2;
+  }
+  optional VideoLinearity linearity = 2;
+  optional int32 minduration        = 3;
+  optional int32 maxduration        = 4;
+
+  // Protocol follows OpenRTB 2.1 Table 6.7
+  enum VideoBidResponseProtocol {
+    vast_1         = 1;
+    vast_2         = 2;
+    vast_3         = 3;
+    vast_1_wrapper = 4;
+    vast_2_wrapper = 5;
+    vast_3_wrapper = 6;
+  }
+
+  optional VideoBidResponseProtocol protocol = 5;
+
+  // ------------------------------------------------------------------------
+  // ***    OPTIONAL VIDEO FIELDS                                         ***
+  // ------------------------------------------------------------------------
+  // These fields are optional fields that can be set by the OpenX RTB
+  // system and and passed to the bidder in the video bid request. These
+  // are ported over from the optional OpenRTB 2.1 video fields.
+
+  optional int32 startdelay = 6;
+
+}
+
+
+// identification for single matching ad
+message AdId {
+  required int32 campaign_id          = 1;    // The campaign's ID.
+  required int32 placement_id         = 2;    // The placement's ID
+  required int32 creative_id          = 3;    // The creative's ID.
+
+  optional string deprecated_deal_id  = 4;    // This field is deprecated, and will be
+                                              // blank.  Use the deals field instead.
+
+  /* When specified, Ad Size below will override Ad Size found in Bid Request */
+  optional int32 ad_height            = 5;    // ad height override
+  optional int32 ad_width             = 6;    // ad width override
+
+  /* Private Premium support */
+  optional Deal deal                  = 7;    // Associated deal for bid in bid response.
+                                              // For partial compatibility with older versions
+                                              // of this protocol, this field will contain the first
+                                              // deal in the bid request, but new code should use
+                                              // the eligible_deals field instead.
+  repeated Deal eligible_deals        = 8;    // List of eligible direct deals for ad.
+                                              // Populated in bid request; do not use
+                                              // in bid response.
+}
+
+/* Additional attributes in RTB */
+message Geo {
+  /* openRTB-compliant fields */
+  optional float lat         = 1;       // Latitude
+  optional float lon         = 2;       // Longitude
+  optional string country    = 3;       // The user's Country
+  optional string city       = 4;       // The user's city
+  optional string zip        = 5;       // The user's zip/postal code
+  optional int32 type        = 6;       // Source of geo data
+  /* openx-specific fields */
+  optional string continent  = 7;       // The user's continent
+  optional string state      = 8;       // The user's state
+  optional int32  dma        = 9;       // The user's dma
+}
+
+message Device {
+  /* openRTB-compliant fields */
+  optional string didsha1          = 1;   // SHA1 hashed device identifier
+  optional int32 dnt               = 2;   // Do not Track indicator. If "0",
+                                          // then do not track Is set to
+                                          // false, if "1", then do no track
+                                          // is set to true in browser.
+  optional string ua               = 3;   // Browser user agent string
+  optional string ip               = 4;   // IPv4 address closest to device
+  optional string carrier          = 5;   // Mobile Country Code-Mobile
+                                          // Network Code
+  optional string os               = 6;   // Device operating system
+  optional string osv              = 7;   // Device operating system version
+  repeated string language         = 8;   // Browser language
+  optional string make             = 9;   // Device make
+  optional string model            = 10;  // Device model
+  optional string connectiontype   = 11;  // Detected data connection type
+                                          // for the device Values are wifi,
+                                          // cell, cell-2G, cell-3G, cell-4G
+  optional string deprecated_api   = 12;  // Deprecated. api in the format of
+                                          // repeated int32 should be used.
+  optional Geo geo                 = 13;  // Geo object
+  /* openx-specific fields */
+  optional string browser          = 14;  // Browser name
+  optional string browser_version  = 15;  // Browser version
+  repeated int32  api              = 16;  // List of supported API frameworks
+
+  optional string odin1            = 17;  // odin1
+  optional string openudid         = 18;  // openudid
+  optional string secureudid       = 19;  // secureudid
+  optional string idforad          = 20;  // advertiser identifier (Apple IFA,
+                                          // Android Advertising ID, etc)
+  optional string androidid_md5    = 21;  // md5 of android id
+  optional string androidid_sha1   = 22;  // sha1 of android id
+  optional string macaddress_md5   = 23;  // md5 of mac address
+  optional string macaddress_sha1  = 24;  // sha1 of mac address
+  optional bool   idforad_enabled  = 25;  // Flag indicating whether user's device
+                                          // has tracking on or off
+  optional string category         = 26;  // device category (smart phone,
+                                          // tablet etc)
+}
+
+message User {
+  optional int32  yob              =  1;  // User's year of birth.
+  optional int32  ethnicity        =  2;  // User's ethnicity (0,1,2,3,4).
+  optional string gender           =  3;  // User's sex ('M', 'F', 'O',
+                                          // or null for unknown).
+  optional int32  income           =  4;  // User's annual income, in dollars.
+  optional string marital          =  5;  // User's marital status ('S', 'M', 'D').
+  repeated ExtKeyValue ext         =  6;  // key value pairs for extension fields
+}
+
+message ThirdPartyKeyValue {
+  optional string key   = 1;
+  optional string value = 2;
+}
+
+message BidRequest {
+
+  // ------------------------------------------------------------------------
+  // ***    GUARANTEED FIELDS                                             ***
+  // ------------------------------------------------------------------------
+  // These fields are guaranteed to be set by the OpenX RTB system and
+  // and passed to the bidder in the bid request.
+
+  // OPENX identifiers
+  optional int32 api_version         = 1;        // This value represents the
+                                                 // version of the API the
+                                                 // Market is using to
+                                                 // communicate with the
+                                                 // real-time bidder.
+  optional string auction_id         = 2;        // This is a unique value
+                                                 // generated by the Market
+                                                 // and used to identify the
+                                                 // auction request.
+
+  // ADVERTISER identifiers
+  repeated AdId   matching_ad_ids    = 3;        // list of ads which match
+                                                 // for this request
+
+  // PUBLISHER identifiers
+  optional string pub_website_id     = 4;        // The ID of the publisher's
+                                                 // website
+
+  // AD size
+  optional int32  ad_height          = 5;        // The height of the ad
+                                                 // position to fill
+  optional int32  ad_width           = 6;        // The width of the ad
+                                                 // position to fill
+
+  // ------------------------------------------------------------------------
+  // ***    OPTIONAL FIELDS                                               ***
+  // ------------------------------------------------------------------------
+  // These fields are optional and may be set by the OpenX RTB system and
+  // passed to the bidder in the bid request.
+
+  // USER related fields
+  optional string user_cookie_id     = 7;        // A unique ID representing the
+                                                 // user.  To protect the user's
+                                                 // identity this value is
+                                                 // different for each bidder.
+  optional bytes  user_ip_address    = 8;        // The IP address of the user
+  optional int32  user_screen_height = 9;        // The height of the
+                                                 // user's screen
+  optional int32  user_screen_width  = 10;       // The width of the
+                                                 // user's screen
+  optional string user_geo_country   = 11;       // The user's country
+  optional string user_geo_state     = 12;       // The user's state
+  optional int32  user_geo_dma       = 13;       // The user's dma
+  optional string user_agent         = 14;       // The user's browser, version,
+                                                 // and operating system.
+  repeated string user_lang          = 15;       // The language preferences set
+                                                 // in the user's browser
+
+  // PUBLISHER related fields
+  optional string url                = 16;       // The URL the ad request is
+                                                 // coming from.
+  optional string http_referer       = 17;       // The HTTP_REFERER for the
+                                                 // page generating the ad
+                                                 // request
+  optional int32  ox_cat_tier_1      = 18;       // The top level category of
+                                                 // the page's content.
+  optional int32  ox_cat_tier_2      = 19;       // The second level category of
+                                                 // the page's content.
+  repeated int32  pub_blocked_cat    = 20;       // Ad categories blocked by the
+                                                 // publisher on this request
+  repeated int32  pub_blocked_content= 21;       // Ad content blocked by the
+                                                 // publisher on this request
+  repeated int32  pub_blocked_type   = 22;       // Ad types blocked by the
+                                                 // publisher on this request
+  repeated string pub_blocked_url    = 23;       // Domains that are blocked
+                                                 // from the ad's click URL on
+                                                 // this request.
+  optional string rtb_data           = 24;       // opaque blob from retargeting
+  repeated string pub_blocked_ad_languages = 25; // languages not allowed in ads
+                                                 // on publishers website
+
+  optional string market_operator    = 26;
+  optional Device device             = 27;       // Device Object
+  optional bool   is_test            = 28;       // Used for testing.
+                                                 // Bidders are expected to return
+                                                 // responses in valid format, which
+                                                 // will be used for validation only
+                                                 // and get discarded.
+  optional bool   is_mobile_site     = 29;       // is mobile optimized site
+  optional bool   is_application     = 30;       // is application
+  repeated ThirdPartyKeyValue tp_key_val = 31;   // Third Party key value pairs
+  optional string implementation_type = 32;      // inventory impl type
+  optional bool   ssl_enabled        = 33;       // Site is using SSL.
+  optional User   user               = 34;       // User demographics.
+  optional string pub_ad_unit_id     = 35;       // Publisher's ad unit ID. (INTERNAL USE ONLY)
+  optional Video  video              = 36;       // Video object
+  optional App    app                = 37;       // App object
+  optional Site   site               = 38;       // Site object
+}
+
+message BidResponse {
+  // ------------------------------------------------------------------------
+  // ***    REQUIRED FIELDS                                               ***
+  // ------------------------------------------------------------------------
+  // These fields are required to be set in the response from the bidder.
+
+  // OPENX identifiers
+  required int32  api_version        = 1;  // This value represents the version
+                                           // of the API the Market is using
+                                           // to communicate with the real-time
+                                           // bidder.
+                                           // NOTE: this should match the
+                                           // version in the BidRequest
+  required string auction_id         = 2;  // This is a unique value
+                                           // generated by the Market
+                                           // and used to identify the
+                                           // bid request.
+                                           // NOTE: this should match the
+                                           // request_id in the BidRequest
+
+
+  // deprecated, should be in Bid sub-message, see documentation for details
+  optional AdId   DEPRECATED_matching_ad_id = 3;
+  optional int64  DEPRECATED_cpm_bid_micros = 4;
+  optional string DEPRECATED_ad_code  = 5;
+  optional string DEPRECATED_click_url = 6;
+  optional string DEPRECATED_advertiser_id = 7;
+  repeated int32  DEPRECATED_ad_ox_cats = 8;
+  repeated string DEPRECATED_click_through_urls = 9;
+  optional string DEPRECATED_buyer_id     = 10;
+  optional string DEPRECATED_brand_id    = 11;
+
+  // ------------------------------------------------------------------------
+  // ***    OPTIONAL FIELDS                                               ***
+  // ------------------------------------------------------------------------
+  // These fields are optional and may be set by the bidder.
+  repeated Bid    bids                   = 12; // list of bids for the given
+                                               // auction
+  optional int64  next_highest_bid_micros= 13; // the value of the next highest
+                                               // bid after those in this
+                                               // response
+}
+
+message Bid {
+  // ------------------------------------------------------------------------
+  // ***    REQUIRED FIELDS                                               ***
+  // ------------------------------------------------------------------------
+  // these fields must be passed with a valid bid
+  required AdId   matching_ad_id     = 1;  // the id of the matching ad
+                                           // selected
+  required int64  cpm_bid_micros     = 2;  // The CPM bid expressed in micros.
+                                           // Bids must be made in billable
+                                           // units (so for USD they must be
+                                           // multiples of 10,000).
+  required string ad_code            = 3;  // The HTML code to serve if the
+                                           // bidder wins the auction.
+
+  // ------------------------------------------------------------------------
+  // ***    OPTIONAL FIELDS                                               ***
+  // ------------------------------------------------------------------------
+  // These fields are optional and may be set by the bidder.
+
+  repeated int32  ad_ox_cats         = 4;  // OpenX categories of the ad.
+  repeated string click_through_urls = 5;  // Destination URL of the ad.
+  optional string buyer_id           = 6;  // The bidder's ID for their primary
+                                           // customer in their system (which is
+                                           // often a network or agency).
+  optional string brand_id           = 7;  // The bidder's ID for the brand
+                                           // whose ad will show.
+  optional string crid               = 8;  // Creative ID for bid's content.
+  optional bool can_passback         = 9;  // true if this ad can passback
+  optional string agency_id          = 10; // The bidder's ID for the agency
+                                           // on whose behalf they are bidding.
+}
+
+message AuctionResults {
+  // ------------------------------------------------------------------------
+  // ***    REQUIRED FIELDS                                               ***
+  // ------------------------------------------------------------------------
+  // These fields are guaranteed to be set by the OpenX RTB system and passed
+  // to the bidder in the notify request.
+
+  // OPENX identifiers
+  required int32 api_version         = 1;        // This value represents the
+                                                 // version of the API the
+                                                 // Market is using to
+                                                 // communicate with the
+                                                 // real-time bidder.
+  required string auction_id         = 2;        // This is a unique value
+                                                 // generated by the Market
+                                                 // and used to identify the
+                                                 // auction request.
+  repeated AuctionResult results     = 3;        // Information about the
+                                                 // result of the auction
+}
+
+enum AuctionStatus {
+  win = 1;     // the auction was won
+  loss = 2;    // the auction was lost
+  error = 3;   // an error occured
+}
+
+message AuctionResult {
+  required AdId          matching_ad_id = 1;  // the ad id for this notification
+  required AuctionStatus status = 2;          // win, loss or error
+  optional string        loss_reason = 3;     // the reason for the loss, for
+                                              // example, "price",
+                                              // "disqualification"
+                                              // see documentation for more
+  optional string        error_reason = 4;    // the reason for the error
+                                              // for example, "timeout"
+  optional int64         winning_bid_micros = 5; // only set for status loss
+  optional int64         clearing_price_micros = 6; // only set for status win
+}
+
+// The publisher object corresponding to OpenRtb spec 2.3 (sec 3.2.8).
+message Publisher {
+  optional string id = 1; //Exchange-specific publisher ID
+}
+
+// Local Variables:
+// indent-tabs-mode: nil
+// End:
