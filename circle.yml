@@ -9,6 +9,7 @@ machine:
 dependencies:
   pre:
     - go get github.com/tools/godep
+    - go get github.com/laher/goxc && goxc -bc="linux,darwin" -arch="amd64" -t
   override:
     - godep restore
     - gvm linkthis github.com/taik/go-adx-parser
@@ -17,4 +18,4 @@ test:
   override:
     - godep go test -v ./...
   post:
-    - godep go build -o $CIRCLE_ARTIFACTS/go-adx-parser
+    - goxc -d=$CIRCLE_ARTIFACTS
