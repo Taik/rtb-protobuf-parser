@@ -1,0 +1,13 @@
+{
+	"ImportPath": "github.com/taik/go-adx-parser",
+	"GoVersion": "go1.4.2",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/golang/protobuf/proto",
+			"Rev": "73aaaa9eb61d74fbf7e256ca586a3a565b308eea"
+		}
+	]
+}
