@@ -5,7 +5,8 @@ machine:
   post:
     - gvm install go1.4.2 --name=stable --binary --with-protobuf --with-build-tools
     - gvm use stable --default
-    - go get github.com/laher/goxc && goxc -bc="linux,darwin" -arch="amd64" -t
+    - go get github.com/mitchellh/gox
+    - gox -build-toolchain -os="linux darwin" -arch="amd64" -cgo
 
 dependencies:
   pre:
@@ -18,5 +19,5 @@ test:
   override:
     - godep go test -v ./...
   post:
-    - goxc -d=$CIRCLE_ARTIFACTS -bc="linux,darwin" -arch="amd64":
-        pwd: /home/ubuntu/.gvm/pkgsets/stable/global/src/github.com/taik/go-adx-parser/
+    - gox -os="linux darwin" -arch="amd64"
+    - mv go-adx-parser_* $CIRCLE_ARTIFACTS/
