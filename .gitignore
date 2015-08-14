@@ -9,6 +9,9 @@
 _obj
 _test
 
+build/
+release/
+
 # Architecture specific extensions/prefixes
 *.[568vq]
 [568vq].out

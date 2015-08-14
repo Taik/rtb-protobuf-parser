@@ -1,34 +1,26 @@
-machine:
-  pre:
-    - bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-    - source /home/ubuntu/.gvm/scripts/gvm
-  post:
-    - gvm install go1.4.2 --name=stable --binary --with-protobuf --with-build-tools
-    - gvm use stable --default
-    # Gox -- cross-compile
-    - go get github.com/mitchellh/gox
-    - gox -build-toolchain -os="linux darwin" -arch="amd64" -cgo
-    # gh-release
-    - curl -L https://github.com/progrium/gh-release/releases/download/v2.2.0/gh-release_2.2.0_linux_x86_64.tgz | tar -xz
-    - chmod +x gh-release && sudo mv gh-release /usr/local/bin/
+#machine:
+#  pre:
+#    - bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+#    - source /home/ubuntu/.gvm/scripts/gvm
+#  post:
+#    - gvm install go1.4.2 --name=stable --binary --with-protobuf --with-build-tools
+#    - gvm use stable --default
 
 dependencies:
   pre:
-    - go get github.com/tools/godep
+    - make deps
   override:
     - godep restore
-    - gvm linkthis github.com/taik/go-adx-parser
 
 test:
   override:
     - godep go test -v ./...
   post:
-    - gox -os="linux darwin" -arch="amd64"
-    - mkdir release && mv go-adx-parser_* release/
-    - cp -r release $CIRCLE_ARTIFACTS
+    - make build
+    - cp -r build $CIRCLE_ARTIFACTS/
 
 deployment:
   release:
     branch: master
     commands:
-      - gh-release create taik/go-adx-parser $CIRCLE_BUILD_NUM
+      - make release
