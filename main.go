@@ -9,7 +9,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/taik/go-adx-parser/proto_adx"
 )
 
@@ -32,7 +31,7 @@ func main() {
 		}
 
 		request := &adx_rtb.BidRequest{}
-		err := proto.Unmarshal(raw, request)
+		err := request.Unmarshal(raw)
 		if err != nil {
 			log.Fatalf("Error unmarshaling: %s", err.Error())
 		}
