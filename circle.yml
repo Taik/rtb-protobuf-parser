@@ -24,7 +24,11 @@ test:
     - godep go test -v ./...
   post:
     - gox -os="linux darwin" -arch="amd64"
-    - mkdir $CIRCLE_ARTIFACTS/release
-    - mv go-adx-parser_* $CIRCLE_ARTIFACTS/release/
-    - gh-release create taik/go-adx-parser $CIRCLE_BUILD_NUM:
-        pwd: $CIRCLE_ARTIFACTS
+    - mkdir release && mv go-adx-parser_* release/
+    - cp -r release $CIRCLE_ARTIFACTS
+
+deployment:
+  release:
+    branch: master
+    commands:
+      - gh-release create taik/go-adx-parser $CIRCLE_BUILD_NUM
