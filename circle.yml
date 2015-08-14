@@ -1,5 +1,6 @@
 dependencies:
   pre:
+    - rm -rf /home/ubuntu/.go_workspace/src/github.com/taik/go-adx-parser
     - make deps
   override:
     - godep restore
