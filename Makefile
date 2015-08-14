@@ -1,6 +1,6 @@
 NAME=go-adx-parser
 OS=linux darwin
-VERSION=0.0.2
+VERSION=0.0.2dev
 
 .PHONY: build install release
 
