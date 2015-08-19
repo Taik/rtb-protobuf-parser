@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/taik/rtb-protobuf-parser/proto_openx"
 	"github.com/taik/rtb-protobuf-parser/proto_adx"
+	"github.com/taik/rtb-protobuf-parser/proto_openx"
 )
 
 type ProtoMessager interface {
@@ -13,15 +13,15 @@ type ProtoMessager interface {
 	Marshal() ([]byte, error)
 }
 
-func Decode(b []byte) ([]byte, error) {
-	types := []ProtoMessager{
-		&adx_rtb.BidRequest{},
-		&adx_rtb.BidResponse{},
-		&openx_rtb.BidRequest{},
-		&openx_rtb.BidResponse{},
-	}
+var messageTypes = []ProtoMessager{
+	&adx_rtb.BidRequest{},
+	&adx_rtb.BidResponse{},
+	&openx_rtb.BidRequest{},
+	&openx_rtb.BidResponse{},
+}
 
-	for _, msg := range types {
+func Decode(b []byte) ([]byte, error) {
+	for _, msg := range messageTypes {
 		if err := msg.Unmarshal(b); err != nil {
 			continue
 		}
