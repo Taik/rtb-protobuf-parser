@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/taik/go-adx-parser/proto_adx"
+	"github.com/taik/go-adx-parser/proto_openx"
 )
 
 type ProtoMessager interface {
@@ -13,7 +14,13 @@ type ProtoMessager interface {
 }
 
 func Decode(b []byte) ([]byte, error) {
-	types := []ProtoMessager{&adx_rtb.BidRequest{}, &adx_rtb.BidResponse{}}
+	types := []ProtoMessager{
+		&adx_rtb.BidRequest{},
+		&adx_rtb.BidResponse{},
+		&openx_rtb.BidRequest{},
+		&openx_rtb.BidResponse{},
+	}
+
 	for _, msg := range types {
 		if err := msg.Unmarshal(b); err != nil {
 			continue
