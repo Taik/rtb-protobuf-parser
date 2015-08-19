@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/taik/go-adx-parser/proto_adx"
-	"github.com/taik/go-adx-parser/proto_openx"
+	"github.com/taik/rtb-protobuf-parser/proto_openx"
+	"github.com/taik/rtb-protobuf-parser/proto_adx"
 )
 
 type ProtoMessager interface {

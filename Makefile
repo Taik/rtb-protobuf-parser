@@ -1,6 +1,6 @@
-NAME=go-adx-parser
+NAME=rtb-protobuf-parser
 OS=linux darwin
-VERSION=0.0.3dev
+VERSION=0.0.4
 
 .PHONY: build install release
 

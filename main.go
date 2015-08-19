@@ -7,7 +7,7 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/taik/go-adx-parser/parser"
+	"github.com/taik/rtb-protobuf-parser/parser"
 )
 
 func main() {
