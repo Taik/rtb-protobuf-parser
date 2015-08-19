@@ -4,43 +4,39 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
-	"encoding/json"
-	"fmt"
-	"log"
 	"os"
 
-	"github.com/taik/go-adx-parser/proto_adx"
+	log "github.com/Sirupsen/logrus"
+	"github.com/taik/go-adx-parser/parser"
 )
 
 func main() {
+	log.SetLevel(log.WarnLevel)
+
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		raw := scanner.Bytes()
 
-		if len(raw) < 2 {
-			log.Fatalln("Invalid bytes")
-		}
-
 		// The starting bytes looks like the message is base64, so decode it first
-		if bytes.Equal(raw[0:2], []byte("Eh")) {
+		if len(raw) >= 2 && bytes.Equal(raw[0:2], []byte("Eh")) {
+			log.WithFields(log.Fields{
+				"startingBytes": raw[0:2],
+			}).Debugln("Detected base64-encoded string")
+
 			var err error
 			raw, err = base64.StdEncoding.DecodeString(string(raw))
 			if err != nil {
-				log.Fatalln("Base64 decode error: %s", err.Error())
+				log.WithFields(log.Fields{
+					"msg": err.Error(),
+				}).Warnln("Base64 decode error")
 			}
 		}
 
-		request := &adx_rtb.BidRequest{}
-		err := request.Unmarshal(raw)
+		result, err := parser.Decode(raw)
 		if err != nil {
-			log.Fatalf("Error unmarshaling: %s", err.Error())
-		}
-
-		json, err := json.Marshal(request)
-		if err != nil {
-			log.Fatalf("Error serializing to json: %s", err.Error())
+			log.Warnln(err.Error())
 		} else {
-			fmt.Println(string(json))
+			println(string(result))
 		}
 	}
 }
